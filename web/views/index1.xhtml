@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:body id="body" >
+        <f:metadata>
+            <f:event listener="#{templateController.setSelect(1)}" type="preRenderView"></f:event>
+        </f:metadata>
+        <ui:composition template="./../WEB-INF/template/template.xhtml">
+            <ui:define name="title">
+                INICIO
+            </ui:define>
+
+            <ui:define name="center">
+                <section class="content-header">
+                    <h1>
+                        <i class="fa fa-home"></i> INICIO
+                         <small>GESTIONAR WEB-SERVICE</small>
+                    </h1>
+                </section>
+                <section class="content inicio">
+                    <div class="row">
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-blue">
+                                <div class="inner">
+                                    <h3>
+                                        <i class="fas fa-shopping-cart"></i> &nbsp; <p:outputLabel value="#{indexController.cantHabilitados()}"/>
+                                    </h3>
+                                    <p style="font-weight: bold">
+                                        Artículos disponibles
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                            </div>
+                        </div><!-- ./col -->
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-green">
+                                <div class="inner">
+                                    <h3>
+                                        <i class="fa fa-store-alt"></i> &nbsp; <p:outputLabel value="#{indexController.cantEmpresas()}"/>
+                                    </h3>
+                                    <p style="font-weight: bold;">
+                                        Empresas
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-store-alt"></i>
+                                </div>
+                            </div>
+                        </div><!-- ./col -->
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-yellow">
+                                <div class="inner">
+                                    <h3>
+                                        <i class="fa fa-tag"></i> &nbsp; <p:outputLabel id="mails" value="#{indexController.cantMarcas()}"/>
+                                    </h3>
+                                    <p style="font-weight: bold">
+                                        Marcas
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-tag"></i>
+                                </div>
+                            </div>
+                        </div><!-- ./col -->
+
+                        <div class="col-lg-3 col-xs-6">
+                            <!-- small box -->
+                            <div class="small-box bg-red">
+                                <div class="inner">
+                                    <h3>
+                                        <i class="fas fa-toolbox"></i> &nbsp; <p:outputLabel value="#{indexController.cantLineas()}"/>
+                                    </h3>
+                                    <p style="font-weight: bold">
+                                        Líneas
+                                    </p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-toolbox"></i>
+                                </div>
+                            </div>
+                        </div><!-- ./col -->
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header">                            
+                                    <h2>TIENDA INDUSTRIAL DE HERRAMIENTAS S.A.</h2>
+                                </div>
+                                <div style="display: block;height: 200px" class="box-body">
+                                    <center>
+                                        <p:graphicImage value="resources/img/tihsa2.jpg" width="250" />
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="box box-primary">
+                                <div class="box-header">                            
+                                    <h2>MACPARTES S.A.</h2>
+                                </div>
+                                <div style="display: block;height: 200px" class="box-body">
+                                    <center>
+                                        <p:graphicImage value="resources/img/macpartes.png" width="250" />
+                                    </center>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

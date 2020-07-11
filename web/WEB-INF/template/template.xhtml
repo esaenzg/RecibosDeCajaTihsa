@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"     
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      >
+
+    <h:head>
+        <f:metadata>
+            <f:event listener="#{templateController.verificarSesion()}" type="preRenderView"></f:event>
+        </f:metadata>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <title><ui:insert name="title"></ui:insert> :: TIHSA</title>
+        <link rel="shortcut icon" type="image/x-icon" href="icono.ico"/>
+
+        <!-- Fuentes -->
+        <h:outputStylesheet name="css/fonts/ptsans_regular_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_bold_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_italic_macroman/stylesheet.css"/>
+        <!-- Fuente para los iconos -->
+        <h:outputStylesheet name="css/fonts/font-awesome/font-awesome.css"/>
+
+        <!-- Tema -->
+        <h:outputStylesheet name="css/temas/tema1.css"/>
+        <h:outputStylesheet name="css/style.css"/>
+        <h:outputStylesheet name="css/style_emilio.css"/>
+        <h:outputStylesheet name="css/bootstrap.css"/>
+        <h:outputStylesheet name="css/AdminLTE.css"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"/>
+        <script type="text/javascript" charset="utf-8">
+            PrimeFaces.locales['es'] = {
+                closeText: 'Cerrar',
+                prevText: 'Anterior',
+                nextText: 'Siguiente',
+                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                monthNamesShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+                dayNamesShort: ['Dom', 'Lun', 'Mar', 'Mie', 'Jue', 'Vie', 'Sab'],
+                dayNamesMin: ['D', 'L', 'M', 'M', 'J', 'V', 'S'],
+                weekHeader: 'Semana',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix: '',
+                timeOnlyTitle: 'Sólo hora',
+                timeText: 'Tiempo',
+                hourText: 'Hora',
+                minuteText: 'Minuto',
+                secondText: 'Segundo',
+                currentText: 'Fecha actual',
+                ampm: false,
+                month: 'Mes',
+                week: 'Semana',
+                day: 'Día',
+                allDayText: 'Todo el día'
+            };
+
+
+        </script>
+    </h:head>
+
+
+    <h:body class="skin-blue" >
+        <ui:insert name="north">
+
+            <header class="header" style="width: 100%">
+                <p:link outcome="pretty:inicio" class="logo" title="Escritorio" >
+                    <span style="text-shadow: 1px 1px #888;font-weight: bold;color: #fff"> TIHSA</span>
+                </p:link>            
+
+                <nav class="navbar navbar-static-top" role="navigation">
+                    <!-- Sidebar toggle button-->
+                    <a href="#" class="navbar-btn sidebar-toggle"  data-toggle="offcanvas" role="button" style="color: var(--color-text-top)!important;">
+                        <span class="sr-only" style="color: var(--color-text-top)!important">Toggle navigation</span>
+                        <span class="icon-bar" ></span>
+                        <span class="icon-bar" ></span>
+                        <span class="icon-bar" ></span>
+                    </a>
+
+                    <div class="navbar-right" >
+                        <h:form id='frmNotif'>
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown user user-menu">    
+                                    <p:link   title="Usuario" id="link"  onclick="PF('over1').show();" href="#" style="padding:13px!important">
+                                        <i class="fa fa-user-circle" style="text-shadow: 1px 1px #888"></i> 
+                                        <span>
+                                            <p:outputLabel style="color: var(--color-text-top);" value="#{templateController.usuario.nombre}" />  
+
+                                            <small><i class="fa fa-circle text-success" style="text-shadow: 1px 1px #888"></i></small>                           
+                                        </span>
+                                    </p:link>
+                                    <p:overlayPanel widgetVar="over1" for="link"  id="userpanel" my="left top" at="left bottom"  dismissable="true"
+                                                    hideEffect="blind"   dynamic="false" style="width: 270px;background: var(--fondo-logo)!important;padding: 0!important;margin: 0!important;">
+                                        <center>
+                                            <div style="height: 85px;width: 100%;border-radius: 50%;">
+                                                <p:graphicImage value="/resources/img/tihsa.png" height="50" style="margin-top: 25px" /><br/>
+                                            </div>
+                                        </center>
+                                        <div style="padding: 5px; color: var(--color-text-top);">
+                                            <center style="font-weight: bold">#{templateController.usuario.nombre}</center>
+                                        </div>
+                                        <div style="width: 270px; height: 100%;background: #fff!important;margin-left: -15px;margin-bottom: -7px;display: block">
+                                            <br/>
+                                            <p:commandButton value="Salir" icon="fa fa-power-off fa-fw" style="float: right;margin-right: 10px"
+                                                             action="#{loginController.logout()}" class="bg-red"/>
+                                            <br/>
+                                            <br/>
+                                        </div>
+                                    </p:overlayPanel>
+                                </li>
+                            </ul>
+                        </h:form>
+                    </div>
+                </nav>
+            </header>
+        </ui:insert>    
+        <div class="wrapper row-offcanvas row-offcanvas-left"  >
+            <ui:insert name="west">
+                <aside class="left-side sidebar-offcanvas" >
+                    <section class="sidebar" >
+                        <div class="user-panel" >
+                            <div class="pull-left info" style="width: 100%;height: 100px;padding-top: 20px">
+                                <p>
+                                    <center>
+                                        <p:graphicImage value="/resources/img/tihsa_b.png" height="50" /><br/>
+                                    </center>
+                                </p>
+                            </div>
+                        </div>
+                        <h:form id="frmMenu">
+                            <p:menu widgetVar="myMenu" toggleable="true" style="background: var(--fondo-menu);height: 110vh" class="sidebar-menu menuLateral" >
+                                <p:menuitem value="Inicio" outcome="pretty:inicio" icon="fa fa-home fa-fw" class="menuItem #{templateController.select eq '1' ? 'setMenu':'outMenu'}" />
+                                <p:menuitem value="Artículos" outcome="pretty:articulos" icon="fa fa-shopping-cart fa-fw" class="menuItem #{templateController.select eq '2' ? 'setMenu':'outMenu'}"/>
+                                <p:menuitem value="Empresas" outcome="pretty:empresas" icon="fa fa-store-alt fa-fw" class="menuItem #{templateController.select eq '3' ? 'setMenu':'outMenu'}"/>
+                            </p:menu>
+                        </h:form>
+                    </section>
+                </aside>
+            </ui:insert>
+            <aside  class="right-side">
+                <ui:insert name="center" class="bg-blue">Content</ui:insert>
+            </aside>
+        </div>   
+        <p:idleMonitor timeout="600000" multiWindowSupport="true"  onidle="PF('dlgIdle').show();"  >
+            
+        </p:idleMonitor>
+        <p:dialog widgetVar="dlgIdle" resizable="false"  modal="true" width="350"
+                  closable="false" fitViewport="true" responsive="true" showEffect="explode" >
+            <f:facet name="header">
+                <i class="fa fa-clock"></i> La sesión ha expirado
+            </f:facet>
+            <center>
+                <h:outputText value="Su sesión ha expirado, por favor ingrese nuevamente"/>
+                <br/>
+
+                <br/>
+                <p:button outcome="pretty:login" icon="fa fa-refresh" value="Reiniciar" class="btn1"/> 
+            </center>
+        </p:dialog>
+        <!-- Archivos js del tema -->
+        <h:outputScript name="js/bootstrap.js"/>
+        <h:outputScript name="js/app.js"/>
+    </h:body>
+
+</html>
+

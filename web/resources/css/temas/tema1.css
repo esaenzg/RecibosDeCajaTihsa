@@ -1,0 +1,92 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 31/01/2019, 11:32:27 AM
+    Author     : Emilio
+*/
+
+/*Para personalizar los colores del los logos AISA - ALPA*/
+:root{ 
+    --fondo-logo: #efb413;
+}
+:root{
+    --hover-logo: #e8b11b; 
+}
+:root{
+    --color-texto:#fff;
+}
+
+/*Para personalizar los colores de la barra top*/
+:root{
+    --color-text-top: rgba(255,255,255,1);
+}
+:root{
+    --fondo-top: #fabc11;
+}
+
+/*Para personalizar los colores del menu lateral*/
+:root{
+    --fondo-menu: #222D32;
+/*    color: */
+}
+:root{
+    --color-text-menu: #B8C7CE;
+}
+:root{
+    --color-text-menu-hover: #f9f9f9;
+}
+:root{
+    --fondo-text-menu-hover: rgba(0,0,0,0.2);
+}
+:root{
+    --borde-top-menu: 1px solid transparent;
+}
+:root{
+    --borde-bottom-menu: 1px solid transparent;
+}
+:root{
+    --fondo-tree: #2C3B41;
+}
+:root{
+    --color-tree-text: #8A8A7A;
+}
+:root{
+    --color-tree-text-hover: #fff;
+}
+:root{
+    --fondo-tree-text-hover: #2C3B41;
+}
+
+
+/*Para personalizar los colores del borde top de los dialogos*/
+:root{
+    --borde-top-dlg: solid 4px #fabc11;
+    /*--borde-top-dlg: solid 4px #CE2246;*/
+}
+:root{
+    --borde-top-div: solid 2px #231f20;
+}
+
+/*Para los colores de encabezado de tablas*/
+:root{
+    --color-header-tabla: #fabc11;
+}
+:root{
+    --color-texto-tabla: #222;
+}
+:root{
+    --fondo-paginator: #ddd;
+}
+:root{
+    --color-paginator: #222;
+}
+:root{
+    --borde-paginator: #222;
+}
+/*Para personalizar el color del btn1*/
+:root{
+    --fondo-btn1: #293f54;
+}

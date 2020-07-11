@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+        <f:metadata>
+            <f:event listener="#{templateController.setSelect(2)}" type="preRenderView"></f:event>
+        </f:metadata>
+        <ui:composition template="./../WEB-INF/template/template.xhtml">
+            <ui:define name="title">
+                ARTICULOS
+            </ui:define>
+
+            <ui:define name="center">
+
+                <section class="content-header">
+                    <p:ajaxStatus style="float: right;margin-top: 0px;margin-right: 10px;margin-bottom: 3px; position: absolute;right: 0;">
+                        <f:facet name="start">
+                            <div class="loading" style="margin-left: 3px;margin-top: 0px;"></div>
+                        </f:facet>
+                    </p:ajaxStatus>
+                    <h1>
+                        <i class="fa fa-shopping-cart"></i> ARTÍCULOS
+                        <small>GESTIONAR WEB-SERVICE</small>
+                    </h1>
+
+                </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="col-md-12">
+                        <div class="box box-solid box-warning">
+                            <div class="box-header">                            
+                                <h3 class="box-title"><i class="fa fa-shopping-cart"></i> ARTÍCULOS ASIGNADOS A LAS EMPRESAS</h3>
+                                
+                            </div>
+                            <p:growl>
+                                <p:autoUpdate/>
+                            </p:growl>
+                            <div style="display: block;" class="box-body">
+                                <h:form id="frmListar">
+                                    <p:inputText style="float:right;width: 250px;padding: 7px 7px!important" placeholder="Buscar artículo" 
+                                                 value="#{articuloController.buscar}" >
+                                        <p:ajax update="tblArticulos" listener="#{articuloController.filtrar2()}" event="keyup"/>
+                                    </p:inputText>
+                                    <h:panelGrid columns="3">
+                                        <p:selectOneMenu value="#{articuloController.idEmpresa}" style="vertical-align: middle"
+                                                         required="true" requiredMessage="Seleccione una empresa">
+                                            <f:selectItem itemLabel="Seleccione una empresa" noSelectionOption="true" />
+                                            <f:selectItems value="#{articuloController.listEmpresas}" var="empresa" 
+                                                           itemLabel="#{empresa.nombreEmpresa}" itemValue="#{empresa.idEmpresa}" />
+                                        </p:selectOneMenu>
+                                        <p:commandButton icon="fa fa-search fa-fw" title="Ver productos asignados" class="btn1" style="height: 33px;margin-left: 5px"
+                                                         action="#{articuloController.listarArticulos()}" update="tblArticulos frmListar"/>
+                                        <p:commandButton value="Asignar artículos" icon="fa fa-cart-plus fa-fw" class="btn2" style="margin-left: 10px"
+                                                         action="#{articuloController.listarSource()}"
+                                                         update="frmAgregar"/>
+                                    </h:panelGrid>
+                                </h:form>
+                                <p:dataTable id="tblArticulos" 
+                                             value="#{articuloController.listArticulos}"
+                                             var="item"
+                                             emptyMessage="No hay artículos asignados"  
+                                             reflow="true"
+                                             paginator="true"
+                                             rowHover="true"
+                                             rows="10"
+                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="10,20, 30"
+                                             paginatorPosition="top"
+                                             rowIndexVar="row">
+                                    <f:facet name="header">
+                                        <div align="left">
+                                            <h:form id='frmFiltro'>
+                                                <p:selectOneMenu value="#{articuloController.marca1}" style="vertical-align: middle"
+                                                                 >
+                                                    <f:selectItem itemLabel="Todas las marcas" itemValue="0" />
+                                                    <f:selectItems value="#{articuloController.listMarcas}" var="marca"
+                                                                   itemLabel="#{marca.nombreMarca}" itemValue="#{marca.nombreMarca}"/>
+                                                    <p:ajax update="tblArticulos" listener="#{articuloController.filtrar2()}" />
+                                                </p:selectOneMenu>
+                                                <p:selectOneMenu value="#{articuloController.codTArticulo1}" style="vertical-align: middle"
+                                                                 >
+                                                    <f:selectItem itemLabel="Todas las líneas" itemValue="0"/>
+                                                    <f:selectItems value="#{articuloController.listLineas}" var="linea"
+                                                                   itemLabel="(#{linea.codTArticulo}) #{linea.nombreLinea}" itemValue="#{linea.codTArticulo}"/>
+                                                    <p:ajax update="tblArticulos" listener="#{articuloController.filtrar2()}" />
+                                                </p:selectOneMenu>
+                                            </h:form>
+                                        </div>
+                                        <h4 class="box-title" ><p:outputLabel value="LISTA DE ARTÍCULOS ASIGNADOS"/></h4>
+                                    </f:facet>
+
+                                    <p:column headerText="No." width="40" class="cellCenter">
+                                        <p:outputLabel value="#{row+1}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Código" width="120" class="cellCenter">
+                                        <p:outputLabel value="#{item.codigo}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Nombre del artículo" >
+                                        <p:outputLabel value="#{item.nombreArticulo}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Exist." width="80" class="cellCenter">
+                                        <p:outputLabel id="cantidad" value="#{item.cantidad}"/>
+                                        <p:tooltip for="cantidad" position="top" value="Existencias en inventario"/>
+                                    </p:column>
+                                    <p:column headerText="Mínimo" width="80" class="cellCenter">
+                                        <p:outputLabel id="minimo" value="#{item.minimo}"/>
+                                        <p:tooltip for="minimo" position="top" value="Mínimo en inventario para poder enviar"/>
+                                    </p:column>
+
+                                    <p:column headerText="Exist. a enviar" width="80" class="cellCenter">
+                                        <p:outputLabel id="enviar" value="#{articuloController.restarExistencias(item)}"/>
+                                        <p:tooltip for="enviar" position="top" value="Existencias a enviar a #{articuloController.empresa.nombreEmpresa}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Precio" width="100">
+                                        <p:outputLabel id="precio" value="Q #{articuloController.decimal(item.precio)}" style="width: 100%;text-align: right"/>
+                                        <p:tooltip for="precio" position="top" value="Precio normal en el sistema"/>
+                                    </p:column>
+                                    <p:column headerText="Precio al cliente -(#{articuloController.empresa.descuento}% + #{articuloController.empresa.descExtra}%)" width="120">
+                                        <p:outputLabel id="cliente" value="Q #{articuloController.decimal2(item.precio)}" style="width: 100%;text-align: right"/>
+                                        <p:tooltip for="cliente" position="top" value="Precio que se le dará a #{articuloController.empresa.nombreEmpresa}"/>
+                                    </p:column>
+                                    <p:column headerText="Estado" width="80" class="cellCenter">
+                                        <span class="label label-#{item.estado ? 'success' : 'danger'}">
+                                            <p:outputLabel id="estado" value="#{item.estado ? 'Activo' : 'Inactivo'}"/>
+                                            <p:tooltip for="estado" position="top" value="Estado del artículo"/>
+                                        </span>
+                                    </p:column>
+                                    <p:column headerText="Opciones" class="opciones2 cellCenter" >
+                                        <p:commandButton icon="fa fa-edit fa-fw" class="bg-blue" 
+                                                         action="#{articuloController.setEditArticulo(item)}" update="frmEdit"
+                                                         oncomplete="PF('dlgEditar').show();" id="ed"/>
+                                        <p:tooltip for="ed" position="top" value="Editar artículo asignado"/>
+                                        <p:commandButton icon="fa fa-remove fa-fw" class="bg-red" title="Eliminar artículo asignado" 
+                                                         update="tblArticulos" id="el"
+                                                         action="#{articuloController.delete(item)}">
+                                            <p:confirm header="Confirmar" message="¿Está seguro de querer eliminar el artículo '#{item.codigo}'?" icon="fa fa-warning fa-fw"/>
+                                        </p:commandButton>
+                                        <p:tooltip for="el" position="left" value="Eliminar artículo asignado"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <br/>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <p:growl id="grl" globalOnly="true">
+                        <p:autoUpdate disabled="true"/>
+                    </p:growl>
+                    <p:dialog header="Modificar asignación" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                              hideEffect="clip" fitViewport="true" widgetVar="dlgEditar" modal="true" width="300">
+                        <h:form id="frmEdit">
+                            <h:panelGrid columns="2" width="100%">
+                                <p:outputLabel value="Artículo: "/>
+                                <p:inputText value="#{articuloController.editArticulo.codigo}" readonly="true"/>
+                                <p:outputLabel value="Mínimo: "/>
+                                <p:inputText value="#{articuloController.editArticulo.minimo}" style="text-align: right"/>
+                                <p:outputLabel value="Estado:"/>
+                                <p:selectBooleanButton offLabel="Inactivo" onLabel="Activo" offIcon="fa fa-thumbs-down" onIcon="fa fa-thumbs-up"
+                                                       value="#{articuloController.editArticulo.estado}" style="width: 100%" class="#{articuloController.editArticulo.estado ? 'bg-green':'bg-red'}">
+                                    <p:ajax update="@this"/>
+                                </p:selectBooleanButton>
+                            </h:panelGrid>
+                            <center>
+                                <p:commandButton icon="fa fa-save fa-fw" title="Guardar modificación" value="Guardar"
+                                                 class="btn1" action="#{articuloController.updateMinimo()}" update="tblArticulos" style="margin-top: 10px"/>
+                            </center>
+                        </h:form>
+
+                    </p:dialog>
+                    <p:dialog header="Asignar artículos" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                              hideEffect="clip" fitViewport="true" widgetVar="dlgAgregar" modal="true" width="900">
+                        <h:form id="frmAgregar">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td style="border: none;">
+                                        <p:selectOneMenu value="#{articuloController.marca}" style="vertical-align: middle">
+                                            <f:selectItem itemLabel="Todas las marcas" itemValue="0"/>
+                                            <f:selectItems value="#{articuloController.listMarcas}" var="marca"
+                                                           itemLabel="#{marca.nombreMarca}" itemValue="#{marca.nombreMarca}"/>
+                                            <p:ajax update="frmAgregar:tblAdd" listener="#{articuloController.filtrar()}" />
+                                        </p:selectOneMenu>
+                                        <p:selectOneMenu value="#{articuloController.codTArticulo}" style="vertical-align: middle">
+                                            <f:selectItem itemLabel="Todas las líneas" itemValue="0"/>
+                                            <f:selectItems value="#{articuloController.listLineas}" var="linea"
+                                                           itemLabel="(#{linea.codTArticulo}) #{linea.nombreLinea}" itemValue="#{linea.codTArticulo}"/>
+                                            <p:ajax update="frmAgregar:tblAdd" listener="#{articuloController.filtrar()}" />
+                                        </p:selectOneMenu>
+                                    </td>
+                                    <td style="border: none;text-align: right">
+                                        <p:inputText style="width: 250px;padding: 7px 7px!important" placeholder="Buscar artículo" 
+                                                     value="#{articuloController.buscarDlg}" >
+                                            <p:ajax update="frmAgregar:tblAdd" listener="#{articuloController.filtrar()}" event="keyup"/>
+                                        </p:inputText>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p:dataTable value="#{articuloController.listSource}" var="prod" emptyMessage="No hay registros"
+                                         reflow="true" id="tblAdd"
+                                         paginator="true"
+                                         rowHover="true"
+                                         rows="10"
+                                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         rowsPerPageTemplate="10,20, 30"
+                                         paginatorPosition="top"
+                                         rowIndexVar="row">
+                                <p:column headerText="No." width="40">
+                                    <p:outputLabel value="#{row+1}"/>
+                                </p:column>
+                                <p:column headerText="Código" width="130">
+                                    <p:outputLabel value="#{prod.codigo}"/>
+                                </p:column>
+                                <p:column headerText="Nombre del artículo" filterable="true" filterValue="#{prod.nombreArticulo}" filterMatchMode="contains">
+                                    <p:outputLabel value="#{prod.nombreArticulo}"/>
+                                </p:column>
+                                <p:column headerText="Asignar" width="60" class="cellCenter">
+                                    <p:commandButton icon="fa fa-check fa-fw" class="bg-green"
+                                                     action="#{articuloController.agregar(prod)}" update="tblArticulos"/>
+                                </p:column>
+                                <f:facet name="footer">
+                                    <div align="right">
+                                        <p:commandButton value="Asignar todos" icon="fa fa-check fa-fw" action="#{articuloController.agregaTodos()}"
+                                                         class="btn1" update="tblArticulos"/>
+                                    </div>
+                                </f:facet>
+                            </p:dataTable>
+                        </h:form>
+                    </p:dialog>
+
+                    <p:confirmDialog responsive="true" showEffect="clip" hideEffect="clip" global="true"  closeOnEscape="true" >
+                        <h:form>
+                            <center>
+                                <p:commandButton icon="fa fa-check fa-fw" value="Si" type="button" styleClass="ui-confirmdialog-yes text-green"  />
+                                <p:commandButton icon="fa fa-close fa-fw" value="No" type="button" styleClass="ui-confirmdialog-no text-red" />
+                            </center>
+                        </h:form>
+                    </p:confirmDialog>
+
+                </section>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

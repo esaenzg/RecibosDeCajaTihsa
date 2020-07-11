@@ -1,0 +1,555 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"     
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      >
+    <h:head>
+        <title>Recibo de caja</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <h:outputStylesheet name="css/fonts/font-awesome/font-awesome.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_regular_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_bold_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_italic_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/style.css"/>
+        <h:outputStylesheet name="css/style_emilio.css"/>
+        <h:outputStylesheet name="css/bootstrap.css"/>
+        <h:outputStylesheet name="css/AdminLTE.css"/>
+        <h:outputStylesheet name="css/temas/tema1.css"/>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous"/>
+    </h:head>
+    <h:body >
+        <f:event type="preRenderView" listener="#{reciboController.obenerParametros()}"  />
+        <div style="width: 100%;margin: auto">
+            <h:form id="frmIngreso" accept="text,number" onkeypress="if (event.keyCode === 13) {
+                        event.keyCode = 0;
+                    }">
+                <h:panelGrid columns="1" width="100%" columnClasses="">
+                    <p:wizard backLabel="Anterior" nextLabel="Siguiente" widgetVar="wiz" flowListener="#{reciboController.onFlowProcess}"
+                              >
+                        <p:tab title="Datos generales" titleStyleClass="titleTab" titleStyle="font-size: 12px!important">
+                            <p:outputPanel>
+                                <p:panel>
+                                    <f:facet name="header">
+                                        Recibo de caja - Usuario: <span style="text-transform: capitalize!important">#{reciboController.usuario.toLowerCase()}</span>
+                                    </f:facet>
+                                    <h:panelGrid columns="2"  width="100%">
+                                        <p:inputText value="RCE-#{reciboController.formatRCE(reciboController.recibo.numRecibo)}" readonly="#{reciboController.recibo.numRecibo != null}" 
+                                                     style="font-weight: bold;width: 100%" tabindex="1" id="numRecibo"/>
+
+                                        <p:calendar pattern="dd/MM/yyyy" style="margin-left: 5px" tabindex="2" inputStyle="width:100%"
+                                                    value="#{reciboController.recibo.fecha}" id="fechaEmisio"/>
+
+                                    </h:panelGrid>
+                                    <p:tooltip for="numRecibo" value="Número de recibo" position="top"/>
+                                    <p:tooltip for="fechaEmisio" value="Fecha de emisión" position="top"/>
+                                </p:panel>
+                                <p:panel header="Datos generales" style="width: 100%">
+                                    <h:panelGrid columns="1"   columnClasses="" width="100%">
+                                        <p:outputLabel value="Cliente:"/>
+                                        <h:panelGrid columns="2" width="100%" columnClasses="column1, column2">
+                                            <p:inputText value="#{reciboController.recibo.codCliente}" style="width: 100%;margin-right: 5px!important"  tabindex="3" readonly="#{reciboController.opcion ne 1}"
+                                                         id="codigo" placeholder="Código"  required="true" requiredMessage="Ingrese el código del cliente" >
+                                                <p:ajax listener="#{reciboController.buscaCodigo()}" update="frmIngreso:nit frmIngreso:nombre frmIngreso:correo frmIngreso:whatsapp"/>
+                                            </p:inputText>
+                                            <h:panelGrid columns="2" width="100%" style="margin-left: 5px">
+                                                <p:inputText value="#{reciboController.recibo.nit}"   id="nit" readonly="#{reciboController.opcion ne 1}" 
+                                                             placeholder="NIT" tabindex="4" required="true" requiredMessage="Ingrese el NIT del cliente">
+                                                    <p:ajax listener="#{reciboController.buscaNit()}" update="frmIngreso:codigo frmIngreso:nombre frmIngreso:correo frmIngreso:whatsapp"/>
+                                                </p:inputText>
+                                                <p:commandButton type="button" icon="fa fa-users fa-fw" title="Buscar clientes" class="bg-blue-d" disabled="#{reciboController.opcion ne 1}"
+                                                                 update="frmCliente" onclick="PF('dlgClientes').show();" style="margin-left: 5px"/>
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                        <p:outputLabel value="Nombre:" style="vertical-align: middle!important"/>
+                                        <p:inputTextarea value="#{reciboController.recibo.nombreCliente}" rows="2" tabindex="5"
+                                                         required="true" requiredMessage="Ingrese el nombre del cliente"
+                                                         style="width: 100%;vertical-align: middle!important;" autoResize="false"
+                                                         readonly="#{reciboController.opcion ne 1}" id="nombre"/>
+                                        <p:outputLabel value="Monto:" />
+                                        <p:inputNumber value="#{reciboController.recibo.montoRecibo}"  inputStyle="text-align:right;width: 100%"
+                                                       readonly="#{reciboController.opcion ne 1}" tabindex="6" required="true" requiredMessage="Ingrese el monto del recibo"
+                                                       symbol="Q " decimalPlaces="2" placeholder="Q 0.00" id="monto" class="monto" >
+                                            <p:ajax update="frmIngreso:pago frmIngreso:porAsignar frmIngreso:total frmIngreso:correo frmIngreso:whatsapp" listener="#{reciboController.borrarFacturas()}" event="keyup"/>
+                                        </p:inputNumber>
+                                        <p:outputLabel value="Observaciones:" style="vertical-align: middle!important;width: 145px"/>
+                                        <p:inputTextarea value="#{reciboController.recibo.concepto}"  rows="2" style="vertical-align: middle!important;width: 100%" 
+                                                         autoResize="false" readonly="#{reciboController.opcion eq 0}" tabindex="7" counter="contador" 
+                                                         counterTemplate="Caracteres {0}"
+                                                         maxlength="200"/>
+                                        <p:outputLabel id="contador" />
+                                    </h:panelGrid>
+                                    <p:outputPanel>
+                                        <p:outputLabel  value="Tipo de recibo:" style="margin-top: 5px;"/>
+                                        <p:selectBooleanButton offLabel="Crédito" onLabel="Contado" value="#{reciboController.recibo.tipoRecibo}" disabled="#{reciboController.opcion ne 1}"                                 
+                                                               style="margin-top: 5px;margin-left: 10px;vertical-align: middle;" onIcon="fa fa-dollar" offIcon="fa fa-file">
+                                            <p:ajax update="frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar frmIngreso:tblFacturas frmIngreso:orden" listener="#{reciboController.borrarFacturas()}"/>
+                                        </p:selectBooleanButton>
+                                        <p:inputNumber value="#{reciboController.recibo.numOrden}" thousandSeparator="" decimalPlaces="0" placeholder="Orden"
+                                                       inputStyle="width: 80px;margin-left:10px;vertical-align: middle!important;height:28px!important;margin-top: 5px;padding-right: 3px;padding-left:3px"
+                                                       disabled="#{not reciboController.recibo.tipoRecibo}" id="orden" required="false" 
+                                                       requiredMessage="Ingrese el número de orden" readonly="#{reciboController.opcion ne 1 }"/>
+                                    </p:outputPanel>
+
+                                    <h:panelGrid columns="1" width="100%" columnClasses="">
+                                        <p:outputLabel value="Enviar a:" style=""/>
+                                        <p:outputPanel style="vertical-align: middle!important">
+                                            <h:panelGrid columns="1" width="100%">
+                                                <p:outputPanel style="vertical-align: middle">
+                                                    <div class="ui-g ui-fluid" style="width: 100%;padding: 5px 0 0 0">
+                                                        <div class="ui-g-12 ui-md-4" style="width: 100%;padding: 0;height: 30px">
+                                                            <div class="ui-inputgroup">
+                                                                <span class="ui-inputgroup-addon" style="height: 28px;padding-top: 5px;margin-top: 2px;width: 35px;background: #293f54;color: #fff"><i class="fa fa-envelope"></i></span>
+                                                                <p:inputText id="correo" value="#{reciboController.recibo.correo}"  style="height: 28px!important"  disabled="#{reciboController.recibo.montoRecibo eq null}"
+                                                                             tabindex="20" readonly="#{reciboController.opcion ne 1 }" validatorMessage="El correo electrónico es incorrecto"
+                                                                             placeholder="correo@ejemplo.com" required="#{reciboController.sendCorreo}" requiredMessage="* Correo electrónico">
+                                                                    <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" disabled="#{not reciboController.sendCorreo}" />
+                                                                </p:inputText>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </p:outputPanel>
+                                                <p:outputPanel style="vertical-align: middle;">
+                                                    <div class="ui-g ui-fluid" style="width: 100%;padding: 5px 0 0 0">
+                                                        <div class="ui-g-12 ui-md-4" style="width: 100%;padding: 0;height: 30px">
+                                                            <div class="ui-inputgroup">
+                                                                <span class="ui-inputgroup-addon" style="height: 28px;padding-top: 5px;margin-top: 2px;width: 35px;background: #293f54;color: #fff"><i class="fa fa-phone"></i></span>
+                                                                <p:inputMask id="whatsapp" mask="99999999" value="#{reciboController.recibo.whatsapp}"  style="height: 28px!important" disabled="#{reciboController.recibo.montoRecibo eq null}"
+                                                                             tabindex="21" readonly="#{reciboController.opcion ne 1 }" 
+                                                                             placeholder="Whatsapp" required="#{reciboController.sndWhatsapp and reciboController.recibo.codCliente ne 9999}" requiredMessage="* Whatsapp" validatorMessage="Debe ingresar los 8 dígitos del Whatsapp">
+                                                                    <f:validateLength minimum="8" disabled="#{not reciboController.sndWhatsapp or (reciboController.sndWhatsapp and reciboController.recibo.whatsapp eq null)}" />
+                                                                </p:inputMask>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </p:outputPanel>
+                                            </h:panelGrid>
+                                        </p:outputPanel>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:outputPanel>
+                        </p:tab>
+                        <p:tab title="Formas de pago" titleStyleClass="titleTab" titleStyle="font-size: 12px!important">
+                            <p:panel header="Formas de pago" id="pago" >
+                                <h:panelGrid columns="1"  width="100%" columnClasses=""> 
+                                    <p:outputLabel  value="Efectivo" style="width: 120px"/>
+                                    <p:inputText value="#{reciboController.recibo.efectivo}" style="text-align:right;width:50%" readonly="#{reciboController.opcion ne 1}"
+                                                 placeholder="Q 0.00" tabindex="8" id="efectivo" validatorMessage="El monto de efectivo es incorrecto"
+                                                 disabled="#{reciboController.recibo.montoRecibo eq null}">
+                                        <p:ajax  listener="#{reciboController.sumarMontos()}" event="keyup" update="frmIngreso:total frmIngreso:btnAntiguas 
+                                                 frmIngreso:btnSelect frmIngreso:btnGuardar frmIngreso:porAsignar" />
+                                        <p:ajax  listener="#{reciboController.sumarMontos2()}" update="frmIngreso:total frmIngreso:btnAntiguas 
+                                                 frmIngreso:btnSelect frmIngreso:btnGuardar frmIngreso:porAsignar" />
+                                    </p:inputText>
+                                    <p:outputLabel  value="Cheque:" style="vertical-align: middle"/>
+                                    <h:panelGrid columns="2" width="100%" columnClasses="columnaMovil,columnaMovil">
+                                        <p:inputText value="#{reciboController.recibo.montoCheque1}"  style="text-align:right;width:100%" 
+                                                     readonly="#{reciboController.opcion ne 1}" tabindex="9"
+                                                     placeholder="Q 0.00"
+                                                     disabled="#{reciboController.recibo.montoRecibo eq null}">
+                                            <p:ajax listener="#{reciboController.sumarMontos()}" event="keyup" update="frmIngreso:total frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar
+                                                    frmIngreso:cheque1  frmIngreso:fechaCheque1  frmIngreso:banco1 frmIngreso:porAsignar" />
+                                            <p:ajax listener="#{reciboController.sumarMontos2()}" update="frmIngreso:total frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar
+                                                    frmIngreso:cheque1  frmIngreso:fechaCheque1  frmIngreso:banco1 frmIngreso:porAsignar" />
+                                        </p:inputText>
+                                        <p:inputText value="#{reciboController.recibo.numCheque1}" disabled="#{reciboController.recibo.montoCheque1 eq null}" 
+                                                     readonly="#{reciboController.opcion ne 1}" tabindex="10" class="anchoSelect"
+                                                     required="#{reciboController.recibo.montoCheque1 ne null}" style="margin-left: 5px" placeholder="Número de cheque"
+                                                     requiredMessage="Ingrese el número de cheque" id="cheque1"/>
+                                        <p:calendar pattern="dd/MM/yyyy" value="#{reciboController.recibo.fechaCheque1}" 
+                                                    readonly="#{reciboController.opcion ne 1}" tabindex="11"
+                                                    disabled="#{reciboController.recibo.montoCheque1 eq null}" id="fechaCheque1"  inputStyle="width:100%" placeholder="Fechado"
+                                                    required="#{reciboController.recibo.montoCheque1 ne null}" requiredMessage="Ingrese la fecha del cheque"/>
+                                        <p:selectOneMenu value="#{reciboController.recibo.codBanco1}" style="vertical-align: middle;margin-left: 5px" tabindex="12" autoWidth="false"
+                                                         disabled="#{reciboController.recibo.montoCheque1 eq null or reciboController.opcion ne 1}" id="banco1" class="anchoSelect"
+                                                         required="#{reciboController.recibo.montoCheque1 ne null}" requiredMessage="Seleccione el banco del cheque">
+                                            <f:selectItem itemLabel="Seleccione el banco" noSelectionOption="true" />
+                                            <f:selectItems value="#{reciboController.listBancos}" var="banco"
+                                                           itemLabel="#{banco.nombre} (#{banco.codBanco})" itemValue="#{banco.codBanco}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <p:outputLabel  value="Depósito:" style="vertical-align: middle"/>
+                                    <h:panelGrid columns="2" width="100%" columnClasses="columnaMovil,columnaMovil">
+                                        <p:inputText value="#{reciboController.recibo.montoDeposito}" style="text-align:right;width:100%;" 
+                                                     readonly="#{reciboController.opcion ne 1}" tabindex="13"
+                                                     placeholder="Q 0.00" 
+                                                     disabled="#{reciboController.recibo.montoRecibo eq null}">
+                                            <p:ajax listener="#{reciboController.sumarMontos()}" event="keyup" update="frmIngreso:total frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar
+                                                    frmIngreso:boleta  frmIngreso:bancod  frmIngreso:fechaDep frmIngreso:porAsignar" />
+                                            <p:ajax listener="#{reciboController.sumarMontos2()}" event="blur" update="frmIngreso:total frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar
+                                                    frmIngreso:boleta  frmIngreso:bancod  frmIngreso:fechaDep frmIngreso:porAsignar" />
+                                        </p:inputText>
+                                        <p:inputText value="#{reciboController.recibo.numBoleta}" readonly="#{reciboController.opcion ne 1}" tabindex="14" style="margin-left: 5px"
+                                                     disabled="#{reciboController.recibo.montoDeposito eq null}" id="boleta" placeholder="Número de boleta" class="anchoSelect"
+                                                     required="#{reciboController.recibo.montoDeposito ne null}" requiredMessage="Ingrese el número de boleta"/>
+                                        <p:calendar pattern="dd/MM/yyyy" value="#{reciboController.recibo.fechaCheque2}" 
+                                                    readonly="#{reciboController.opcion ne 1}" tabindex="11"
+                                                    disabled="#{reciboController.recibo.montoDeposito eq null}" id="fechaDep"  inputStyle="width:100%;" placeholder="Fecha depósito"
+                                                    required="#{reciboController.recibo.montoDeposito ne null}" requiredMessage="Ingrese la fecha del cheque"/>
+                                        <p:selectOneMenu value="#{reciboController.recibo.bancoDeposito}" style="vertical-align: middle;margin-left: 5px;width: 170px!important" id="bancod"
+                                                         tabindex="15" class="anchoSelect" autoWidth="false" 
+                                                         required="#{reciboController.recibo.montoDeposito ne null}" requiredMessage="Seleccione la cuenta del depósito"
+                                                         disabled="#{reciboController.recibo.montoDeposito eq null or reciboController.opcion ne 1}">
+                                            <f:selectItem itemLabel="Seleccione la cuenta" noSelectionOption="true" />
+                                            <f:selectItems value="#{reciboController.listCuentas}" var="banco"
+                                                           itemLabel="#{banco.nombre}" itemValue="#{banco.codBanco}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <p:outputLabel  value="Tarjeta de crédito:"/>
+                                    <h:panelGrid columns="2"  width="100%" columnClasses="columnaMovil,columnaMovil">
+                                        <p:inputText value="#{reciboController.recibo.montoTC}" style="text-align:right;width:100%;" 
+                                                     readonly="#{reciboController.opcion ne 1}" tabindex="16"
+                                                     placeholder="Q 0.00"
+                                                     disabled="#{reciboController.recibo.montoRecibo eq null}">
+                                            <p:ajax listener="#{reciboController.sumarMontos()}" event="keyup" update="frmIngreso:total frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar
+                                                    frmIngreso:tarjeta  frmIngreso:tipo  frmIngreso:auto frmIngreso:porAsignar" />
+                                            <p:ajax listener="#{reciboController.sumarMontos2()}" update="frmIngreso:total frmIngreso:btnAntiguas frmIngreso:btnSelect frmIngreso:btnGuardar
+                                                    frmIngreso:tarjeta  frmIngreso:tipo  frmIngreso:auto frmIngreso:porAsignar" />
+                                        </p:inputText>
+                                        <p:inputText value="#{reciboController.recibo.numTC}" readonly="#{reciboController.opcion ne 1}" tabindex="17" style="margin-left: 5px"
+                                                     disabled="#{reciboController.recibo.montoTC eq null}" id="tarjeta" placeholder="Número de tarjeta" class="anchoSelect"
+                                                     required="#{reciboController.recibo.montoTC ne null}" requiredMessage="Ingrese el número de tarjeta"/>
+                                        <p:inputText value="#{reciboController.recibo.numCheque2}" disabled="#{reciboController.recibo.montoTC eq null}" 
+                                                     readonly="#{reciboController.opcion ne 1}" tabindex="10"
+                                                     required="#{reciboController.recibo.montoTC ne null}" style="width:100%;" placeholder="Autorización"
+                                                     requiredMessage="Ingrese el número de cheque" id="auto"/>
+                                        <p:selectOneMenu value="#{reciboController.recibo.tipoTC}" style="vertical-align: middle;margin-left: 5px" id="tipo" class="anchoSelect"
+                                                         disabled="#{reciboController.recibo.montoTC eq null or reciboController.opcion ne 1}" tabindex="18" autoWidth="false"
+                                                         required="#{reciboController.recibo.montoTC ne null}" requiredMessage="Seleccione el tipo de tarjeta">
+                                            <f:selectItem itemLabel="Seleccione el tipo" noSelectionOption="true" />
+                                            <f:selectItems value="#{reciboController.listTipoTC}" var="tipoTC"
+                                                           itemLabel="#{tipoTC.nomTipoTC} (#{tipoTC.tipoTC})" itemValue="#{tipoTC.tipoTC}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <p:outputLabel  value="Total:"/>
+                                    <p:inputNumber value="#{reciboController.recibo.total}" id="total" readonly="false" tabindex="19" required="#{reciboController.recibo.montoRecibo ne reciboController.recibo.total or reciboController.recibo.total eq null}"
+                                                   requiredMessage="El total debe cuadrar con el monto del recibo"
+                                                   inputStyle="text-align:right;width:50%;color: #{reciboController.recibo.montoRecibo eq reciboController.recibo.total ? 'green':'red'}!important"
+                                                   symbol="Q " decimalPlaces="2" placeholder="Q 0.00" disabled="#{reciboController.recibo.montoRecibo eq null}">
+                                    </p:inputNumber>
+                                </h:panelGrid>
+
+                                <!-- 4190233-5-->
+                            </p:panel>
+                        </p:tab>
+                        <p:tab title="Facturas a pagar" titleStyleClass="titleTab" titleStyle="font-size: 12px!important">
+                            <p:panel header="Facturas a pagar"  >
+                                <table style="width: 100%">
+                                    <tr>
+                                        <td style="border: none;text-align: left">
+                                            <p:commandButton value="Facturas antiguas" action="#{reciboController.pagarFacturasAntiguas()}" 
+                                                             update="frmIngreso frmIngreso:btnGuardar frmIngreso:porAsignar" class="bg-blue-d" icon="fa fa-calendar-alt fa-fw" id="btnAntiguas"
+                                                             disabled="#{reciboController.recibo.montoRecibo ne reciboController.recibo.total or reciboController.recibo.montoRecibo eq null or reciboController.recibo.total eq null or reciboController.recibo.tipoRecibo }"
+                                                             rendered="#{reciboController.opcion eq 1}">
+                                            </p:commandButton>
+                                            <p:commandButton value="Seleccionar facturas" action="#{reciboController.validarMonto()}" 
+                                                             update="frmFacturas" class="bg-blue-d" icon="fa fa-list fa-fw" id="btnSelect"
+                                                             disabled="#{reciboController.recibo.montoRecibo ne reciboController.recibo.total or reciboController.recibo.montoRecibo eq null or reciboController.recibo.total eq null or reciboController.recibo.tipoRecibo }"
+                                                             rendered="#{reciboController.opcion eq 1}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align: right!important;border:none;">
+                                            <p:outputLabel style="font-size: 18px;" id="porAsignar" value="#{reciboController.opcion eq 1 ? 'Por asignar':'Por aplicar'}: Q #{reciboController.decimal(reciboController.monto)}"
+                                                           rendered="#{reciboController.recibo.estado ne 0}"/>
+                                            <p:outputLabel style="font-size: 18px;" class="text-red" id="porAsignar2" value="[RECIBO ANULADO]" rendered="#{reciboController.recibo.estado eq 0}"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <p:dataGrid emptyMessage="No hay facturas agregadas" value="#{reciboController.listFactura}" var="factura" id="tblFacturas"
+                                            columns="1" rows="5" paginator="true"
+                                            currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                            paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                            paginatorPosition="top">
+                                    <h:panelGrid columns="4" width="100%" style="border: 1px solid #ccc">
+                                        <p:outputLabel value="Serie" style="font-weight: bold"/>
+                                        <p:outputLabel value="#{factura.serie}"/>
+                                        <p:outputLabel value="Factura/DTE" style="font-weight: bold"/>
+                                        <p:outputLabel value="#{factura.numDTE}"/>
+                                        <p:outputLabel value="Fecha" style="font-weight: bold"/>
+                                        <p:outputLabel value="#{reciboController.formatoFecha(factura.fecha)}"/>
+                                        <p:outputLabel value="Total" style="font-weight: bold"/>
+                                        <p:outputLabel value="Q #{reciboController.decimal(factura.total)}"/>
+                                        <p:outputLabel value="Abono" style="font-weight: bold"/>
+                                        <p:outputLabel value="Q #{reciboController.decimal(factura.abono)}"/>
+                                        <p:outputLabel value="Saldo" style="font-weight: bold"/>
+                                        <p:outputPanel>
+                                            <p:outputLabel value="Q #{reciboController.decimal(factura.saldo)}"/>
+                                            <p:outputPanel rendered="#{factura.estado eq 1}" style="float: right;margin-right: 5px">
+                                                <i class="fa fa-check" style="color: green"></i>
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+                                        <p:outputLabel value="Opciones" style="font-weight: bold" rendered="#{reciboController.opcion eq 1}"/>
+                                        <p:commandButton icon="fa fa-remove fa-fw" action="#{reciboController.quitarFactura(factura)}" disabled="#{reciboController.guardado}"
+                                                         update="frmIngreso:tblFacturas frmIngreso:btnGuardar frmIngreso:porAsignar" class="btn2" title="Eliminar factura"
+                                                         rendered="#{reciboController.opcion eq 1}">
+                                            <p:confirm header="Confirmar" message="¿Está seguro que desea eliminar este registro?" icon="fa fa-warning fa-fw" /> 
+                                        </p:commandButton>
+                                    </h:panelGrid>
+                                    <f:facet name="footer">
+                                        <div align="right">
+                                            <p:commandButton value="Aplicar" icon="fa fa-dollar fa-fw" class="bg-green" title="Aplicar todos los abonos del recibo"
+                                                             rendered="#{(reciboController.listFactura.size() gt 0 and reciboController.opcion eq 2 and reciboController.recibo.estado ne 0) or (reciboController.recibo.tipoRecibo and reciboController.opcion eq 2)}" 
+                                                             action="#{reciboController.aplicarTodos()}"
+                                                             update="frmIngreso:tblFacturas frmIngreso:btnUpdate frmIngreso:porAsignar" disabled="#{reciboController.monto eq 0 and not reciboController.recibo.tipoRecibo}"/>
+                                        </div>
+                                    </f:facet>
+                                </p:dataGrid>
+                            </p:panel>
+                            <center>
+                                <p:commandButton value="Guardar" class="bg-green" icon="fa fa-save fa-fw" id="btnGuardar"
+                                                 disabled="#{reciboController.desactivar()}" 
+                                                 update="frmConf frmPDF frmIngreso @this"
+                                                 title="Guardar nuevo recibo"
+                                                 action="#{reciboController.confirmarGuardado()}" rendered="#{reciboController.opcion eq 1}"/>
+                                <p:commandButton value="Limpiar" class="bg-yellow" icon="fa fa-broom fa-fw" id="btnLimpiar"
+                                                 update="frmPDF frmIngreso"
+                                                 title="Limpiar campos"
+                                                 action="#{reciboController.limpiar()}" rendered="#{reciboController.opcion eq 1}"/>
+                                <p:commandButton value="Guardar" class="bg-green" icon="fa fa-save fa-fw" id="btnUpdate"
+                                                 update="frmCuenta frmIngreso" disabled="#{reciboController.recibo.estado  eq 0 or reciboController.recibo.estado eq 1}"
+                                                 title="Actualizar datos del recibo" onclick="PF('dlgCuenta').show();"
+                                                 rendered="#{reciboController.opcion eq 2}"/>
+                                <p:commandButton value="Revertir" class="bg-yellow" icon="fa fa-save fa-fw" id="btnRevertir"
+                                                 update="frmCuenta frmIngreso" disabled="#{reciboController.recibo.estado  ne  1 or reciboController.recibo.tipoRecibo}"
+                                                 title="Revertir recibo aplicado" action="#{reciboController.revertir()}"
+                                                 rendered="#{reciboController.opcion eq 2}">
+                                    <p:confirm header="Confirmar" message="¿Está seguro de revertir los pagos aplicados?" icon="fa fa-warning fa-fw" /> 
+                                </p:commandButton>
+                                <p:commandButton value="Reimprimir" class="bg-blue" icon="fa fa-file-pdf fa-fw" id="btnImprimir"
+                                                 update="frmReimprimir frmPDF" disabled="#{reciboController.recibo.estado  eq 0}"
+                                                 title="Reimprimir recibo"
+                                                 action="#{reciboController.reimprimirMovil()}" rendered="false"/>
+                                <p:commandButton value="Anular" class="bg-red" icon="fa fa-remove fa-fw" id="btnAnular"
+                                                 update="frmPDF frmIngreso" disabled="#{reciboController.recibo.estado eq 0}"
+                                                 title="Anular recibo"
+                                                 action="#{reciboController.anular()}" rendered="#{reciboController.opcion eq 3}">
+                                    <p:confirm header="Confirmar" message="¿Está seguro que desea anular este recibo?" icon="fa fa-warning fa-fw" /> 
+                                </p:commandButton>
+                            </center>
+                        </p:tab>
+                    </p:wizard>
+                </h:panelGrid>
+
+                <p:growl life="4000">
+                    <p:autoUpdate/>
+                </p:growl>
+            </h:form>
+            <p:dialog header="Cuenta del pago" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                      hideEffect="clip" fitViewport="true" widgetVar="dlgCuenta" modal="true" width="450" >
+                <h:form id="frmCuenta">
+                    <h:panelGrid columns="2" width="100%" columnClasses="columnaGrid12, columnaGrid2">
+                        <p:outputLabel value="Cuenta:" for="cta"/>
+                        <p:selectOneMenu value="#{reciboController.codCuenta}" style="vertical-align: middle;width: 100%" id="cta"
+                                         tabindex="15" required="true"
+                                         requiredMessage="Seleccione la cuenta">
+                            <f:selectItem itemLabel="Seleccione la cuenta" noSelectionOption="true" />
+                            <f:selectItems value="#{reciboController.listCuentas}" var="cuenta"
+                                           itemLabel="#{cuenta.nombre}" itemValue="#{cuenta.codBanco}"/>
+                        </p:selectOneMenu>
+                        <p:outputLabel value="Referencia:"/>
+                        <p:inputTextarea rows="2" value="#{reciboController.referencia}" style="width: 100%;vertical-align: middle"
+                                         counter="cont" counterTemplate="Caracteres {0}" maxlength="50" />
+                        <p:outputLabel value=""/>
+                        <p:outputLabel value="" id="cont"/>
+                        <p:outputLabel value="Descuento:"/>
+                        <p:inputNumber value="#{reciboController.descuento}" inputStyle="text-align: right;" 
+                                       symbol="Q " decimalPlaces="2" placeholder="Q 0.00"/>
+                    </h:panelGrid>
+                    <center>
+                        <p:commandButton value="Confirmar" class="bg-green" icon="fa fa-save fa-fw"
+                                         update="frmIngreso frmCuenta" action="#{reciboController.update()}"/> 
+                    </center>
+                </h:form>
+            </p:dialog>
+            <p:confirmDialog responsive="true" showEffect="clip" hideEffect="clip" global="true"  closeOnEscape="true" width="400" style="text-align: center" >
+                <h:form>
+                    <center>
+                        <p:commandButton icon="fa fa-check fa-fw" value="Si" type="button" styleClass="ui-confirmdialog-yes text-green"  />
+                        <p:commandButton icon="fa fa-close fa-fw" value="No" type="button" styleClass="ui-confirmdialog-no text-red" />
+                    </center>
+                </h:form>
+            </p:confirmDialog>
+            <p:dialog header="Recibo de caja PDF" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                      hideEffect="clip" fitViewport="true" widgetVar="dlgPDF" modal="true" width="100%" height="260px" maximizable="true">
+                <h:form id="frmPDF">
+                    <p:media value="/resources/archivos/RCE-#{reciboController.formatRCE(reciboController.recibo.numRecibo)}.pdf" width="100%" height="260px" >
+                        Si el navegador no puede mostrar el pdf, <h:outputLink value="/resources/archivos/RCE-#{reciboController.formatRCE(reciboController.recibo.numRecibo)}.pdf"><b>haga clic aqui</b></h:outputLink> para descargar el archivo.
+                    </p:media>
+                </h:form>
+            </p:dialog>
+            <p:dialog header="Recibo de caja generado" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                      hideEffect="clip" fitViewport="true" widgetVar="dlgPDF2" modal="true"  >
+                <h:form id="frmPDF1">
+                    <center>
+                        <p:outputLabel value="Se ha generado el recibo de caja No. RCE-#{reciboController.formatRCE(reciboController.recibo.numRecibo)}"/><br/>
+                        <p:commandButton value="Descargar" icon="fa fa-download" ajax="false"  class="bg-green" onclick="PF('dlgPDF2').hide();"
+                                         rendered="false">
+                            <p:fileDownload value="#{reciboController.fileDown}"  />
+                        </p:commandButton>
+                        <p:commandButton value="Nuevo recibo" icon="fa fa-plus" title="Crear nuevo recibo" update="frmIngreso"
+                                         action="#{reciboController.limpiar()}" onclick="PF('dlgPDF2').hide();" class="bg-blue-d"/>
+                    </center>
+                    <p:growl life="4000">
+                    </p:growl>
+                </h:form>
+            </p:dialog>
+            <p:dialog header="Reimprimir recibo de caja" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                      hideEffect="clip" fitViewport="true" widgetVar="dlgReimprimir" modal="true"  >
+                <h:form id="frmReimprimir">
+                    <center>
+                        <p:outputLabel value="Reimpresión de recibo de caja No. RCE-#{reciboController.formatRCE(reciboController.recibo.numRecibo)}"/><br/>
+                        <p:commandButton value="Descargar" icon="fa fa-download" ajax="false"  class="bg-green" onclick="PF('dlgReimprimir').hide();">
+                            <p:fileDownload value="#{reciboController.fileDown}"  />
+                        </p:commandButton>
+                    </center>
+                </h:form>
+            </p:dialog>
+            <p:dialog header="Confirmar" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                      hideEffect="clip" fitViewport="true" widgetVar="dlgConf" modal="true"  >
+                <h:form id="frmConf">
+                    <center>
+                        <p:outputLabel value="#{reciboController.mensaje}"/><br/>
+                        <p:outputLabel value="¿Desea confirmar la operación?"/><br/>
+                        <p:commandButton value="Si" icon="fa fa-check" title="Confirmar" update="frmPDF2 frmIngreso"
+                                         action="#{reciboController.guardar()}" class="bg-green"
+                                         oncomplete="PF('dlgConf').hide();"/>
+                        <p:commandButton value="No" icon="fa fa-remove" title="Cancelar" update="frmPDF2 frmIngreso"
+                                         oncomplete="PF('dlgConf').hide();" class="bg-red"/>
+                    </center>
+                </h:form>
+                <center>
+                    <p:ajaxStatus>
+                        <f:facet name="start">
+                            <div class="loading" style="margin-top: 10px;"></div>
+                        </f:facet>
+                    </p:ajaxStatus>
+                </center>
+            </p:dialog>
+            <p:dialog header="Reimpresión" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                      hideEffect="clip" fitViewport="true" widgetVar="dlgPDF3" modal="true"  >
+                <h:form id="frmPDF2">
+                    <center>
+                        <p:outputLabel value="Reimpresión del recibo de caja No. RCE-#{reciboController.formatRCE(reciboController.recibo.numRecibo)}"/><br/>
+                        <p:commandButton value="Imprimir" icon="fa fa-file-pdf" title="Imprimir PDF" update="frmPDF"
+                                         action="#{reciboController.reimprimir3()}" class="bg-blue-d"/>
+                    </center>
+                </h:form>
+            </p:dialog>
+            <p:dialog header="Clientes" widgetVar="dlgClientes" resizable="false" responsive="true" modal="true"
+                      showEffect="clip" hideEffect="clip">
+                <h:form id="frmCliente">
+                    <p:inputText placeholder="Buscar cliente" value="#{reciboController.buscar}" style="width: 250px">
+                        <p:ajax listener="#{reciboController.buscarCliente()}" event="keyup" update="frmCliente:tblClientes"/>
+                    </p:inputText>
+                    <p:dataTable id="tblClientes" value="#{reciboController.listCliente}" var="cliente"
+                                 emptyMessage="No hay registros"  paginator="true"
+                                 rowHover="true"
+                                 rows="10" style="font-size: 10px"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 paginatorPosition="top"
+                                 rowIndexVar="row"
+                                 selectionMode="single"
+                                 rowKey="#{cliente.codigoCliente}">
+                        <p:ajax event="rowSelect" listener="#{reciboController.selectCliente}" update="frmIngreso" onsuccess="PF('dlgClientes').hide();"/>
+                        <p:column headerText="No." width="35">
+                            #{row+1}
+                        </p:column>
+                        <p:column headerText="Código" width="45" style="text-align: center">
+                            <p:commandLink action="#{reciboController.selectCliente2(cliente)}" update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar"
+                                           oncomplete="PF('dlgClientes').hide()">
+                                <p:outputLabel value="#{cliente.codigoCliente}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Nombre" width="150">
+                            <p:commandLink action="#{reciboController.selectCliente2(cliente)}" update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar"
+                                           oncomplete="PF('dlgClientes').hide()">
+                                <p:outputLabel value="#{cliente.nombre}" style="text-transform: uppercase"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="NIT" width="60" style="text-align: center">
+                            <p:commandLink action="#{reciboController.selectCliente2(cliente)}" update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar"
+                                           oncomplete="PF('dlgClientes').hide()">
+                                <p:outputLabel value="#{cliente.nit}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Selec." width="40" style="text-align: center" >
+                            <p:commandButton action="#{reciboController.selectCliente2(cliente)}" icon="fa fa-check fa-fw" class="bg-green"
+                                             update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar" title="Seleccionar cliente"
+                                             oncomplete="PF('dlgClientes').hide()"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+            <p:dialog header="Facturas pendientes de pago" widgetVar="dlgFacturas" resizable="false" responsive="true"  modal="true"
+                      showEffect="clip" hideEffect="clip">
+                <h:form id="frmFacturas">
+                    <p:inputText placeholder="Serie" value="#{reciboController.buscaSerie}" style="width: 100px">
+                        <p:ajax update="frmFacturas:bFactura"/>
+                    </p:inputText>
+                    <p:inputText id="bFactura" placeholder="Número de factura" value="#{reciboController.buscaFactura}" style="width: 150px">
+                        <p:ajax listener="#{reciboController.buscarFacturas()}" event="keyup" update="frmFacturas:tblfacturas"/>
+                    </p:inputText>
+                    <p:dataTable id="tblfacturas" value="#{reciboController.listDlgFactura}" var="factura"
+                                 emptyMessage="No hay registros"  paginator="true"
+                                 rowHover="true"
+                                 rows="10"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 paginatorPosition="top"
+                                 rowIndexVar="row"
+                                 style="font-size: 10px"
+                                 selectionMode="single"
+                                 rowKey="#{factura.numDTE}">
+                        <p:ajax event="rowSelect" listener="#{reciboController.selectFactura}" update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar"/>
+
+                        <p:column headerText="Serie"  style="text-align: center">
+                            <p:commandLink action="#{reciboController.selectFactura2(factura)}" 
+                                           update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar">
+                                <p:outputLabel value="#{factura.serie}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Factura/DTE" style="text-align: center">
+                            <p:commandLink action="#{reciboController.selectFactura2(factura)}" 
+                                           update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar">
+                                <p:outputLabel value="#{factura.numDTE}" style="text-transform: uppercase"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Fecha" style="text-align: center">
+                            <p:commandLink action="#{reciboController.selectFactura2(factura)}" 
+                                           update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar">
+                                <p:outputLabel value="#{reciboController.formatoFecha(factura.fecha)}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Total"  >
+                            <p:commandLink action="#{reciboController.selectFactura2(factura)}" 
+                                           update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar">
+                                <p:outputLabel style="width: 100%;text-align: right" value="Q #{reciboController.decimal(factura.total)}"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Selec." width="40" style="text-align: center" >
+                            <p:commandButton action="#{reciboController.selectFactura2(factura)}" icon="fa fa-check fa-fw" class="bg-green"
+                                             update="frmIngreso frmIngreso:porAsignar frmIngreso:btnGuardar" title="Agregar factura"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:form>
+            </p:dialog>
+        </div>
+        <h:outputScript name="js/bootstrap.js"/>
+        <h:outputScript name="js/app.js"/>
+        <script type="text/javascript">
+            function enter(event) {
+                var x = event.which || event.keyCode;
+                if (x === 13) {
+                    var id = document.getElementsById("monto");
+                    id.focus();
+                }
+            }
+        </script>
+    </h:body>
+</html>
+

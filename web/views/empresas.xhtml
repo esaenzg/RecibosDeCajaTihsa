@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <body>
+        <f:metadata>
+            <f:event listener="#{templateController.setSelect(3)}" type="preRenderView"></f:event>
+        </f:metadata>
+        <ui:composition template="./../WEB-INF/template/template.xhtml">
+            <ui:define name="title">
+                EMPRESAS
+            </ui:define>
+
+            <ui:define name="center">
+
+                <section class="content-header">
+                    <p:ajaxStatus style="float: right;margin-top: 0px;margin-right: 10px;margin-bottom: 3px; position: absolute;right: 0;">
+                        <f:facet name="start">
+                            <div class="loading" style="margin-left: 3px;margin-top: 0px;"></div>
+                        </f:facet>
+                    </p:ajaxStatus>
+                    <h1>
+                        <i class="fa fa-store-alt"></i> EMPRESAS
+                        <small>GESTIONAR WEB-SERVICE</small>
+                    </h1>
+
+                </section>
+
+                <!-- Main content -->
+                <section class="content">
+                    <div class="col-md-12">
+                        <div class="box box-solid box-info">
+                            <div class="box-header">                            
+                                <h3 class="box-title"><i class="fa fa-store-alt"></i> EMPRESAS QUE TENDRÁN ACCESO A LOS ARTÍCULOS</h3>
+                            </div>
+
+                            <div style="display: block;" class="box-body">
+                                <p:commandButton icon="fa fa-plus fa-fw" value="Agregar empresa" title="Agregar nueva empresa" class="btn1" 
+                                                 style="height: 33px;margin-bottom: 5px"
+                                                 onclick="PF('dlgEmpresa').show();"/>
+                                <br/>
+                                <p:dataTable id="tblEmpresas" 
+                                             value="#{empresaController.listEmpresas}"
+                                             var="item"
+                                             emptyMessage="No hay empresas registradas"  
+                                             reflow="true"
+                                             paginator="true"
+                                             rowHover="true"
+                                             rows="10"
+                                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}"
+                                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rowsPerPageTemplate="10,20, 30"
+                                             paginatorPosition="top"
+                                             rowIndexVar="row">
+                                    <f:facet name="header">
+                                        <h4 class="box-title" ><p:outputLabel value="LISTA DE EMPRESAS"/></h4>
+                                    </f:facet>
+
+                                    <p:column headerText="No." width="40" style="text-align: center">
+                                        <p:outputLabel value="#{row+1}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Nombre de la empresa" class="opciones3">
+                                        <p:outputLabel value="#{item.nombreEmpresa}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Usuario" class="opciones2">
+                                        <p:outputLabel value="#{item.usuario}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Contraseña" class="opciones2">
+                                        <p:outputLabel value="#{item.password}"/>
+                                    </p:column>
+                                    <p:column headerText="Minimo de inventario" class="opciones2">
+                                        <p:outputLabel value="#{item.minExistencias}"/>
+                                    </p:column>
+                                    <p:column headerText="Descuento" class="opciones2">
+                                        <p:outputLabel value="#{item.descuento}%"/>
+                                    </p:column>
+                                    <p:column headerText="Desc. Extra" class="opciones2">
+                                        <p:outputLabel value="#{item.descExtra}%"/>
+                                    </p:column>
+                                    <p:column headerText="Estado" class="opciones2">
+                                        <span class="label label-#{item.estado ? 'success' : 'danger'}">
+                                            <p:outputLabel value="#{item.estado ? 'Activa' : 'Inactiva'}"/>
+                                        </span>
+                                    </p:column>
+                                    <p:column headerText="Opciones" class="opciones2">
+                                        <p:commandButton icon="fa fa-edit fa-fw" class="bg-green" title="Editar empresa" 
+                                                         action="#{empresaController.setEditEmpresa(item)}" oncomplete="PF('dlgEditar').show();"
+                                                         update="frmEdit"/>
+                                    </p:column>
+                                    <f:facet name="footer">
+                                        <br/>
+                                    </f:facet>
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>
+                    <p:growl >
+                        <p:autoUpdate/>
+                    </p:growl>
+
+                    <p:dialog header="Agregar nueva empresa" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                              hideEffect="clip" fitViewport="true" widgetVar="dlgEmpresa" modal="true" width="400">
+                        <h:form id="frmNueva">
+                            <h:panelGrid columns="2" width="100%" columnClasses="columnaGrid12,columnaGrid2">
+                                <p:outputLabel for="nombre" value="Nombre:"/>
+                                <p:inputText value="#{empresaController.newEmpresa.nombreEmpresa}" id="nombre"
+                                             required="true" requiredMessage="Ingrese el nombre de la empresa"/>
+                                <p:outputLabel for="usuario" value="Usuario:"/>
+                                <p:inputText value="#{empresaController.newEmpresa.usuario}" id="usuario"
+                                             required="true" requiredMessage="Ingrese un usuario para la empresa"/>
+                                <p:outputLabel for="password" value="Contraseña:"/>
+                                <p:inputText value="#{empresaController.newEmpresa.password}" id="password"
+                                             required="true" requiredMessage="Ingrese una contraseña para la empresa"/>
+                                <p:outputLabel for="minimo" value="Mínimo de existencias:" style="width: 150px"/>
+                                <p:inputText value="#{empresaController.newEmpresa.minExistencias}" style="text-align: right" id="minimo"
+                                             required="true" requiredMessage="Ingrese el mínimo de existencias en inventario"/>
+                                <p:outputLabel for="descuento" value="Descuento (%):"/>
+                                <p:inputText value="#{empresaController.newEmpresa.descuento}" style="text-align: right" id="descuento"
+                                               required="true" requiredMessage="Ingrese al menos un 0 en el descuento"/>
+                                <p:outputLabel for="extra" value="Descuento Extra(%):"/>
+                                <p:inputText value="#{empresaController.newEmpresa.descExtra}" style="text-align: right" id="extra"
+                                             required="true" requiredMessage="Ingrese al menos un 0 en el descuento extra"/>
+                            </h:panelGrid>
+                            <center>
+                                <p:commandButton value="Guardar" icon="fa fa-save fa-fw" class="bg-green" title="Guardar empresa"
+                                                 update="tblEmpresas frmNueva" action="#{empresaController.guardar()}"/>
+                            </center>
+                        </h:form>
+                    </p:dialog>
+
+                    <p:dialog header="Editar empresa" responsive="true" resizable="false" showEffect="clip" closeOnEscape="true"
+                              hideEffect="clip" fitViewport="true" widgetVar="dlgEditar" modal="true" width="400">
+                        <h:form id="frmEdit">
+                            <h:panelGrid columns="2" width="100%" columnClasses="columnaGrid12,columnaGrid2">
+                                <p:outputLabel for="nombre" value="Nombre:"/>
+                                <p:inputText value="#{empresaController.editEmpresa.nombreEmpresa}" id="nombre"
+                                             required="true" requiredMessage="Ingrese el nombre de la empresa"/>
+                                <p:outputLabel for="usuario" value="Usuario:"/>
+                                <p:inputText value="#{empresaController.editEmpresa.usuario}" id="usuario"
+                                             required="true" requiredMessage="Ingrese un usuario para la empresa"/>
+                                <p:outputLabel for="password" value="Contraseña:"/>
+                                <p:inputText value="#{empresaController.editEmpresa.password}" id="password"
+                                             required="true" requiredMessage="Ingrese una contraseña para la empresa"/>
+                                <p:outputLabel for="minimo" value="Mínimo de existencias:" style="width: 150px"/>
+                                <p:inputText value="#{empresaController.editEmpresa.minExistencias}" style="text-align: right" id="minimo"
+                                             required="true" requiredMessage="Ingrese el mínimo de existencias en inventario"/>
+                                <p:outputLabel for="descuento" value="Descuento (%):"/>
+                                <p:inputText value="#{empresaController.editEmpresa.descuento}" style="text-align: right" id="descuento"
+                                               required="true" requiredMessage="Ingrese al menos un 0 en el descuento"/>
+                                <p:outputLabel for="extra" value="Descuento Extra(%):"/>
+                                <p:inputText value="#{empresaController.editEmpresa.descExtra}" style="text-align: right" id="extra"
+                                             required="true" requiredMessage="Ingrese al menos un 0 en el descuento extra"/>
+                                <p:outputLabel value="Estado:"/>
+                                <p:selectBooleanButton value="#{empresaController.editEmpresa.estado}" offLabel="Inactiva" onLabel="Activa" style="width: 100%"
+                                                       onIcon="fa fa-thumbs-up" offIcon="fa fa-thumbs-down" class="#{empresaController.editEmpresa.estado ? 'bg-green':'bg-red'}">
+                                    <p:ajax update="@this"/>
+                                </p:selectBooleanButton>
+                            </h:panelGrid>
+                            <center>
+                                <p:commandButton value="Guardar" icon="fa fa-save fa-fw" class="bg-green" title="Guardar empresa"
+                                                 update="tblEmpresas frmEdit" action="#{empresaController.update()}"/>
+                            </center>
+                        </h:form>
+                    </p:dialog>
+                    
+                    <p:confirmDialog responsive="true" showEffect="clip" hideEffect="clip" global="true"  closeOnEscape="true" >
+                        <h:form>
+                            <center>
+                                <p:commandButton icon="fa fa-check fa-fw" value="Si" type="button" styleClass="ui-confirmdialog-yes text-green"  />
+                                <p:commandButton icon="fa fa-close fa-fw" value="No" type="button" styleClass="ui-confirmdialog-no text-red" />
+                            </center>
+                        </h:form>
+                    </p:confirmDialog>
+
+                </section>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

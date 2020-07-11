@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>LOGIN :: TIHSA</title>
+        <link rel="shortcut icon" type="image/x-icon" href="icono.ico"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <h:outputStylesheet name="css/fonts/ptsans_regular_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_bold_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/ptsans_italic_macroman/stylesheet.css"/>
+        <h:outputStylesheet name="css/fonts/font-awesome/font-awesome.css"/>
+        <h:outputStylesheet name="css/style.css"/> 
+        <h:outputStylesheet name="css/pages.css"/>
+    </h:head>
+
+
+    <body >
+        <div class="loginbody">
+            <div>
+                <div style="width: 100%;height: 100px;align-items: center;display: flex;
+    justify-content: center;" >
+                    <div style="height: 100px;width: 80%;margin-top: 10px" class="imagen" >
+
+                    </div>
+                </div>
+                <div class="cnt" style="border-top: 5px solid #f8be1f">
+                    <h1><i class="fa fa-key"></i> Iniciar Sesión</h1>
+
+                    <h:form id="loginForm">   
+                        <p:focus context="loginForm"/>
+                        <p:outputLabel for="txtUserName" value="Usuario:" />
+                        <div class="ui-g ui-fluid" style="width: 100%;padding: 5px 0 0 0">
+                            <div class="ui-g-12 ui-md-4" style="width: 100%;padding: 0;height: 30px">
+                                <div class="ui-inputgroup">
+                                    <span class="ui-inputgroup-addon" style="height: 34.5px;padding-top: 5px;margin-top: 2px;width: 35px;background: #293f54;color: #fff"><i class="fa fa-user"></i></span>
+                                    <p:inputText id="txtUserName" value="#{loginController.usuario.user}" 
+                                                 placeholder="ej. ecastilloj" required="true" requiredMessage="*Usuario"/>
+                                </div>
+                            </div>
+                        </div>
+                        <br/>
+                        <p:outputLabel for="txtPassword" value="Contraseña:" />  
+                        <div class="ui-g ui-fluid" style="width: 100%;padding: 5px 0 0 0">
+                            <div class="ui-g-12 ui-md-4" style="width: 100%;padding: 0;height: 30px">
+                                <div class="ui-inputgroup">
+                                    <span class="ui-inputgroup-addon" style="height: 34.5px;padding-top: 5px;margin-top: 2px;width: 35px;background: #293f54;color: #fff"><i class="fa fa-key"></i></span>
+                                    <p:password id="txtPassword" value="#{loginController.usuario.password}"  placeholder="***********" 
+                                                required="true" requiredMessage="*Contraseña"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br/>
+                        <br/>
+                        <p:commandButton action="#{loginController.login()}" style="background: #001f3f!important" icon="fa fa-sign-in" value="ACEPTAR" update="loginForm" ajax="true"/>
+
+                        <p:messages >
+                            <p:autoUpdate/>
+                            <p:effect type="blind" event="load" delay="2000"/>
+                        </p:messages>
+                    </h:form>
+
+                    <p:ajaxStatus>
+                        <f:facet name="start">
+                            <div class="loading" style="margin-top: 10px;"></div>
+                        </f:facet>
+                    </p:ajaxStatus>
+
+                </div>
+                <p >
+                    <i class="fa fa-copyright"></i>
+                    Tienda Industrial de Herramientas, S.A.
+                </p>
+            </div>
+        </div>
+    </body>
+</html>
